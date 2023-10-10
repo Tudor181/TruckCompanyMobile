@@ -7,6 +7,7 @@ import {useColorScheme} from 'react-native';
 import BottomNavigationIcon from '../components/bottomNav/BottomNavigationIcon';
 import {COLORS} from '../constants/COLORS';
 import AllTrucksScreen from '../screens/AllTrucksScreen';
+import CreateTruckScreen from '../screens/CreateTruckScreen';
 
 type TabStack = {
   TruckDashboard: undefined;
@@ -17,6 +18,7 @@ export type TruckDashboardStack = {
   HomeScreen: undefined;
   DriverDashboardScreen: undefined;
   AllTrucks: undefined;
+  CreateTruckScreen: undefined;
 };
 
 const TabNav = createBottomTabNavigator<TabStack>();
@@ -28,14 +30,22 @@ const TruckDashboard = () => {
     <StackNav.Navigator
       screenOptions={{
         headerStyle: {backgroundColor: color},
-        title: 'All Trucks',
       }}>
       <StackNav.Screen
         name="HomeScreen"
         component={HomeScreen}
         options={{title: 'Home'}}
       />
-      <StackNav.Screen name="AllTrucks" component={AllTrucksScreen} />
+      <StackNav.Screen
+        name="AllTrucks"
+        component={AllTrucksScreen}
+        options={{title: 'All Trucks'}}
+      />
+      <StackNav.Screen
+        name="CreateTruckScreen"
+        component={CreateTruckScreen}
+        options={{title: 'Create Truck'}}
+      />
     </StackNav.Navigator>
   );
 };

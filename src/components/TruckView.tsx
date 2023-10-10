@@ -1,13 +1,44 @@
-import React from 'react';
-import {Image, StyleSheet, Text, View} from 'react-native';
+import React, {useEffect} from 'react';
+import {
+  Alert,
+  Image,
+  StyleSheet,
+  Text,
+  Touchable,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {Truck} from '../screens/AllTrucksScreen';
 import {COLORS} from '../constants/COLORS';
+import {TruckImages, trucks} from '../constants/TruckImages';
+import useFetch from '../hooks/useFetch';
 
 type TruckProp = {
   truck: Truck;
+  refetch: () => Promise<void>;
 };
 const TruckView = (props: TruckProp) => {
   const truck = props.truck;
+
+  const {deleteRequest, isLoading, isError} = useFetch({
+    endpoint: `v1.0/trucks/delete/${truck.id}`,
+  });
+
+  const handleDeleteTruck = async () => {
+    const response = await deleteRequest();
+    console.log(response);
+    if (response === 'Truck Deleted') {
+      Alert.alert('Succesfull deleted');
+      props.refetch();
+    }
+  };
+
+  useEffect(() => {
+    console.log('iserror', isError);
+    if (isError) {
+      Alert.alert('There was an unexpected error');
+    }
+  }, [isError]);
 
   return (
     <View style={styles.container}>
@@ -15,18 +46,41 @@ const TruckView = (props: TruckProp) => {
       <View style={styles.secondContainer}>
         <View style={styles.imageContaiener}>
           <Image
-            source={require('../assets/trucks/Scania.jpeg')}
+            source={
+              TruckImages[truck.imageId as trucks] ??
+              require('../assets/bottomNav/truck.png')
+            }
             style={styles.imageStyle}
             resizeMode="center"
           />
         </View>
         <View style={styles.rightContainer}>
-          <Text>
-            Register Nr.:
-            {truck.title}
-          </Text>
-          <Text>Manufacturing Date: {truck.releaseDate}</Text>
+          <Text>Register Nr.: {truck.nrOfRegistration}</Text>
+          <Text>Manufacture Year: {truck.manufactureYear}</Text>
         </View>
+      </View>
+      <View style={styles.botttomContainer}>
+        <TouchableOpacity
+          onPress={() => {
+            Alert.alert(
+              'Confirmation',
+              `Are you sure you want to delete ${truck.nrOfRegistration} ?`,
+              [
+                {
+                  text: 'Cancel',
+                },
+                {
+                  text: 'Confirm',
+                  onPress: () => handleDeleteTruck(),
+                },
+              ],
+            );
+          }}>
+          <Image
+            style={styles.actionButtons}
+            source={require('../assets/actionIcon/delete.png')}
+          />
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -66,5 +120,14 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'flex-start',
     justifyContent: 'space-evenly',
+  },
+  botttomContainer: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionButtons: {
+    width: 40,
+    height: 40,
   },
 });

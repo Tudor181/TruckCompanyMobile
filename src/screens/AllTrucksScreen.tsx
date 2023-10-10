@@ -3,15 +3,17 @@ import {FlatList, SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import {COLORS} from '../constants/COLORS';
 import useFetch from '../hooks/useFetch';
 import TruckView from '../components/TruckView';
+import CreateFloatingButton from '../components/CreateFloatingButton';
+import {trucks} from '../constants/TruckImages';
+
 export type Truck = {
   id: 'string';
   imdbId: 'string';
-  title: 'string';
-  releaseDate: 'string';
-  trailerLink: 'string';
-  poster: 'string';
-  backdrops: ['string'];
+  imageId: 'string';
   manufacturer: 'string';
+  nrOfRegistration: 'string';
+  manufactureYear: 0;
+  buyDate: 'string';
   driverIds: [
     {
       id: 'string';
@@ -20,8 +22,9 @@ export type Truck = {
     },
   ];
 };
+
 const AllTrucksScreen = () => {
-  const [allTrucks, setAllTrucks] = useState<Truck[]>();
+  const [allTrucks, setAllTrucks] = useState<Truck[]>([]);
   const {get, isLoading, isError} = useFetch({endpoint: 'v1.0/trucks'});
 
   const getAllTrucks = async () => {
@@ -36,11 +39,12 @@ const AllTrucksScreen = () => {
   }, []);
 
   const renderTruck = ({item}: {item: Truck}) => {
-    return <TruckView truck={item} />;
+    return <TruckView truck={item} refetch={getAllTrucks} />;
   };
 
   return (
     <SafeAreaView style={styles.container}>
+      <CreateFloatingButton />
       <View style={styles.listView}>
         <FlatList
           data={allTrucks}
